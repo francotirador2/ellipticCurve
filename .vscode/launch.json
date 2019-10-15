@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - ECGroup",
+            "request": "launch",
+            "mainClass": "echapackage.ECGroup",
+            "projectName": "eccScratch_d695480a"
+        }
+    ]
+}

@@ -13,19 +13,21 @@ public class ECGroup {
     //set to (P,P) since this point does not occur anywhere else in the group
     public final Point ZERO;
 
+    public Point getRandomPointInField() {
+        return this.ZERO;
+    }
     public BigInteger computeOrder() {
 
-        /*
-        N = BigInteger.ZERO;
-        for (BigInteger x = BigInteger.ZERO; x.compareTo(P) == -1; x = x.add(BigInteger.ONE)) {
-            BigInteger tmp[] = x.multiply(x).multiply(x).add(a.multiply(x)).add(b).sqrtAndRemainder();
-            if (tmp[1].equals(BigInteger.ZERO)) { //perfect square
-                if (tmp[0].equals(BigInteger.ZERO)) N.add(BigInteger.ONE);
-                else N.add(BigInteger.valueOf(2));
+        BigInteger order = BigInteger.ZERO;
+        for (BigInteger y = BigInteger.ZERO; y.compareTo(this.P) == -1; y = y.add(BigInteger.valueOf(1))) {
+            for (BigInteger x = BigInteger.ZERO; x.compareTo(this.P) == -1; x = x.add(BigInteger.valueOf(1))) {
+                //System.out.println(y+" "+x);
+                BigInteger lhs = y.multiply(y).mod(this.P);
+                BigInteger rhs = x.multiply(x).multiply(x).add(this.a.multiply(x)).add(this.b).mod(this.P);
+                if (lhs.compareTo(rhs) == 0) order = order.add(BigInteger.ONE);
             }
         }
-        return N; */
-        return BigInteger.ZERO;
+        return order;
     }
 
     private BigInteger getSlopeAtPoint(Point Q) {
@@ -102,8 +104,6 @@ public class ECGroup {
 
     }
 
-    
-
     public Point multiply(Point A, BigInteger K) {
 
         String bin = K.toString(2);
@@ -125,7 +125,7 @@ public class ECGroup {
         /*BigInteger x = BigInteger.valueOf(-19);
         System.out.println(x.mod(BigInteger.valueOf(5))); */
 
-        ECGroup g2 = new ECGroup(BigInteger.valueOf(2), BigInteger.valueOf(3), BigInteger.valueOf(19));
+        ECGroup g2 = new ECGroup(BigInteger.valueOf(2), BigInteger.valueOf(3), BigInteger.valueOf(97));
         System.out.println(g2.computeOrder());
 
         ECGroup group = new ECGroup(BigInteger.valueOf(2),BigInteger.valueOf(3),BigInteger.valueOf(97));
