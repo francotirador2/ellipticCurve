@@ -23,7 +23,7 @@ public class Point {
 
     public BigInteger getX() { return this.x; }
     public BigInteger getY() { return this.y; }
-    
+
     public boolean equals(Object b) {
         Point B = (Point)b;
         return (this.x.equals(B.getX()) && this.y.equals(B.getY()));
@@ -33,8 +33,9 @@ public class Point {
         return "(" + x + "," + y + ")";
     }
 
+/*
     public Point encodeMessage(BigInteger message) {
 
         BigInteger
-    }
+    } */
 }

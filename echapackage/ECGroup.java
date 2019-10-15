@@ -2,6 +2,7 @@ package echapackage;
 
 import java.math.BigInteger;
 import echapackage.Point;
+import java.io.*;
 
 public class ECGroup {
 
@@ -16,18 +17,27 @@ public class ECGroup {
     public Point getRandomPointInField() {
         return this.ZERO;
     }
+
     public BigInteger computeOrder() {
 
-        BigInteger order = BigInteger.ZERO;
-        for (BigInteger y = BigInteger.ZERO; y.compareTo(this.P) == -1; y = y.add(BigInteger.valueOf(1))) {
-            for (BigInteger x = BigInteger.ZERO; x.compareTo(this.P) == -1; x = x.add(BigInteger.valueOf(1))) {
-                //System.out.println(y+" "+x);
-                BigInteger lhs = y.multiply(y).mod(this.P);
-                BigInteger rhs = x.multiply(x).multiply(x).add(this.a.multiply(x)).add(this.b).mod(this.P);
-                if (lhs.compareTo(rhs) == 0) order = order.add(BigInteger.ONE);
-            }
-        }
-        return order;
+      BigInteger order = null;
+      //String command = "python3 echapackage/python-schoof/naive_schoof.py " + this.P + " " + this.a + " " + this.b;
+      String command = "python3 echapackage/python-schoof/reduced_computation_schoof.py " + this.P + " " + this.a + " " + this.b;
+
+      System.out.println(command);
+      try {
+        Process proc = Runtime.getRuntime().exec(command);
+        proc.waitFor();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+        String line = reader.readLine();
+        order = new BigInteger(line);
+
+      } catch (Exception e) {
+        System.out.println("Exception da bunda " + e);
+      }
+
+
+      return order;
     }
 
     private BigInteger getSlopeAtPoint(Point Q) {
@@ -44,6 +54,7 @@ public class ECGroup {
         this.P = P;
         this.ZERO = new Point(P,P);
         this.N = computeOrder();
+        System.out.println(this.N);
     }
 
     public Point inverse(Point A) {
@@ -64,7 +75,7 @@ public class ECGroup {
         BigInteger Xa = A.getX(), Ya = A.getY();
         BigInteger Xb = B.getX(), Yb = B.getY();
 
-        
+
 
         if (A.equals(B)) { //same point
 
@@ -104,13 +115,15 @@ public class ECGroup {
 
     }
 
+  
+
     public Point multiply(Point A, BigInteger K) {
 
         String bin = K.toString(2);
         Point Q = new Point(A);
         Point R = this.ZERO;
 
-        //multiply using repeated doubling 
+        //multiply using repeated doubling
         //log K time to multiply with K
         for (int i = bin.length()-1; i>=0; i--) {
             if (bin.charAt(i) == '1') R = this.sum(R,Q);
@@ -118,7 +131,7 @@ public class ECGroup {
         }
 
         return R;
-    } 
+    }
 
     public static void main(String args[]) {
 
@@ -126,8 +139,10 @@ public class ECGroup {
         System.out.println(x.mod(BigInteger.valueOf(5))); */
 
         ECGroup g2 = new ECGroup(BigInteger.valueOf(2), BigInteger.valueOf(3), BigInteger.valueOf(97));
-        System.out.println(g2.computeOrder());
+        //System.out.println(g2.computeOrder());
 
+        //System.out.println(g2.computeOrder());
+/*
         ECGroup group = new ECGroup(BigInteger.valueOf(2),BigInteger.valueOf(3),BigInteger.valueOf(97));
         Point P1 = new Point(3,6);
         Point P2 = group.sum(P1,P1);
@@ -147,7 +162,7 @@ public class ECGroup {
         System.out.println(group.multiply(P1, BigInteger.valueOf(2)));
         System.out.println(group.multiply(P1, BigInteger.valueOf(3)));
         System.out.println(group.multiply(P1, BigInteger.valueOf(4)));
-        System.out.println(group.multiply(P1, BigInteger.valueOf(5)));  
+        System.out.println(group.multiply(P1, BigInteger.valueOf(5))); */
 
         /* BigInteger x = BigInteger.valueOf(15);
         BigInteger y = x;
